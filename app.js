@@ -65,8 +65,8 @@ const buildP = () =>
       appLogger.info(`${c.magenta}[nexe]${c.white} rebuilding ${containerExe}`);
       const { compile } = require("nexe"); // load nexe compile API
       compile({
-        input: "./container/container.js",
-        output: "./container/" + containerExe
+        input: repoPath + "container/container.js",
+        output: "./" + containerExe
       })
         .then(() => {
           appLogger.info(`${c.magenta}[nexe]${c.white} Build success`);
@@ -80,7 +80,7 @@ const buildP = () =>
 // spawn new container Promise
 const spawnContainerP = () =>
   new Promise((resolve, reject) => {
-    const exe = "./container/" + containerExe;
+    const exe = "./" + containerExe;
     appLogger.info(`${c.magenta}[spawn]${c.white} spawn new proc ${exe}`);
     try {
       if (fs.existsSync(exe)) {
@@ -125,8 +125,8 @@ checkIsRepo()
           })) ||
       appLogger.info(`${c.cyan}[git]${c.white} Repository already exists`)
   )
-  // .then(buildP) // build gw.exe
-  // .then(spawnContainerP)
+  .then(buildP) // build gw.exe
+  .then(spawnContainerP)
   // .then(() => runUpdater()) // run check updates scheduller
   .catch(e => appLogger.error(e));
 
