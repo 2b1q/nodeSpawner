@@ -44,7 +44,7 @@ const containerLogger = createLogger({
 });
 
 // initialise .git repository
-const git = require("simple-git/promise");
+const git = require("simple-git/promise")(repoPath);
 
 // build gw.exe Promise
 const buildP = () =>
