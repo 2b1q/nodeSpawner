@@ -1,0 +1,18 @@
+{
+  "name": "nodespawner",
+  "version": "1.0.0",
+  "description": "self updateble node spawner",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "2b1q",
+  "license": "ISC",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "nexe": "^3.1.0",
+    "simple-git": "^1.110.0",
+    "winston": "^3.2.1"
+  }
+}
