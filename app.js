@@ -63,9 +63,14 @@ const buildP = () =>
     if (platform !== "win32") return reject("not win32 platform");
     if (rebuild) {
       appLogger.info(`${c.magenta}[nexe]${c.white} rebuilding ${containerExe}`);
+      const jscontainer = `./${repoPath}/container/container.js`;
+      // fs.unlinkSync(containerExe, function(err) {
+      //   if (err) return console.log(err);
+      //   console.log("file deleted successfully");
+      // });
       const { compile } = require("nexe"); // load nexe compile API
       compile({
-        input: `./${repoPath}/container/container.js`,
+        input: jscontainer,
         output: "./" + containerExe
       })
         .then(() => {
@@ -95,7 +100,7 @@ const spawnContainerP = () =>
 
 // update scheduller
 var container = null; // container reference
-var rebuild = false; // flag to recompile EXE
+var rebuild = true; // flag to recompile EXE
 var updInterval = null;
 
 const runUpdater = () => {
