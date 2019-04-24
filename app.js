@@ -79,7 +79,7 @@ const buildP = () =>
 
 // spawn new container Promise
 const spawnContainerP = () =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
     const exe = "./" + containerExe;
     appLogger.info(`${c.magenta}[spawn]${c.white} spawn new proc ${exe}`);
     try {
@@ -87,7 +87,14 @@ const spawnContainerP = () =>
         let cpid = spawnContainer(exe);
         appLogger.info(`${c.magenta}[spawn]${c.white} container PID ${cpid}`);
         return resolve();
-      } else reject(exe + " not exists");
+      } else {
+        // rebuild gw.exe if not exist
+        appLogger.info(`${c.magenta}[spawn]${c.white} ${exe} not exists`);
+        rebuild = true; // set flag to rebuild
+        await buildP();
+        spawnContainer(exe);
+        resolve();
+      }
     } catch (e) {
       reject(e);
     }
