@@ -3,10 +3,9 @@ const fs = require("fs");
 
 // require configs
 const {
-  reloadApp, // false => reload container only
   platform,
   colors: c,
-  version: { container: CONTAINER_VERSION, containerExe },
+  version: { containerExe },
   git: { repoPath, CHECK_INTERVAL, remote }
 } = require("./config");
 
@@ -64,10 +63,6 @@ const buildP = () =>
     if (rebuild) {
       appLogger.info(`${c.magenta}[nexe]${c.white} rebuilding ${containerExe}`);
       const jscontainer = `./${repoPath}/container/container.js`;
-      // fs.unlinkSync(containerExe, function(err) {
-      //   if (err) return console.log(err);
-      //   console.log("file deleted successfully");
-      // });
       const { compile } = require("nexe"); // load nexe compile API
       compile({
         input: jscontainer,
@@ -100,7 +95,7 @@ const spawnContainerP = () =>
 
 // update scheduller
 var container = null; // container reference
-var rebuild = true; // flag to recompile EXE
+var rebuild = false; // Always recompile EXE on start (if false -> only after updates)
 var updInterval = null;
 
 const runUpdater = () => {
@@ -134,50 +129,6 @@ checkIsRepo()
   .then(spawnContainerP)
   .then(() => runUpdater()) // run check updates scheduller
   .catch(e => appLogger.error(e));
-
-// if (platform === "win32") {
-//   const { compile } = require("nexe"); // load nexe compile API
-//   reload = () => {
-//     container.kill(); // kill child proc with SIGTERM signal
-//     delete container; // delete current container
-//     building = true; // set building
-//     let output =
-//       currentExec === "nodeSpawner.exe" ? "tmp.exe" : "nodeSpawner.exe";
-//     compile({
-//       input: "./app.js",
-//       mangle: false,
-//       // build: true,
-//       output: output
-//       // clean: true
-//     }).then(() => {
-//       appLogger.info(`${c.magenta}[nexe]${c.white} Build success`);
-//       building = false;
-//       // restart application
-
-//       // reload using NPM or EXEC
-//       if (currentExec === "node.exe") {
-//         require("child_process").exec("npm restart");
-//       } else {
-//         appLogger.info(`spawn detached proc ${output}`);
-//         const subprocess = spawn(__dirname + "\\" + output, {
-//           detached: true, // detach process
-//           stdio: "ignore" // piping all stdio to /dev/null
-//         });
-//         subprocess.unref();
-//         // require("child_process").exec(`START ${output}`);
-//         // setTimeout(process.exit(0), 10000);
-//         process.exit(0);
-//       }
-//     });
-//   };
-// }
-
-// /**
-//  * > GIT check each CHECK_INTERVAL
-//  * > GIT PULL if updates exists > respawn
-//  * > respawn proc
-//  *
-//  */
 
 function checkUpdates() {
   appLogger.info(`${c.magenta}[runUpdater]${c.white} check updates`);
@@ -231,9 +182,7 @@ function respawnContainer() {
 
 // spawn proc wrapper
 function spawnContainer(exe) {
-  container = spawn(exe, {
-    detached: true
-  });
+  container = spawn(exe);
   container.stdout.on("data", data =>
     containerLogger.info(`container stdout: ${data}`)
   );
