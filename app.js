@@ -40,7 +40,7 @@ const appLogger = createLogger({
 });
 const containerLogger = createLogger({
   format: simple(),
-  transports: [new transports.File({ filename: "./container/gw.log" })]
+  transports: [new transports.File({ filename: "./gw.log" })]
 });
 
 // initialise .git repository
@@ -65,7 +65,7 @@ const buildP = () =>
       appLogger.info(`${c.magenta}[nexe]${c.white} rebuilding ${containerExe}`);
       const { compile } = require("nexe"); // load nexe compile API
       compile({
-        input: repoPath + "container/container.js",
+        input: `./${repoPath}/container/container.js`,
         output: "./" + containerExe
       })
         .then(() => {
@@ -127,7 +127,7 @@ checkIsRepo()
   )
   .then(buildP) // build gw.exe
   .then(spawnContainerP)
-  // .then(() => runUpdater()) // run check updates scheduller
+  .then(() => runUpdater()) // run check updates scheduller
   .catch(e => appLogger.error(e));
 
 // if (platform === "win32") {
@@ -179,7 +179,7 @@ function checkUpdates() {
   // stop interval
   clearInterval(updInterval);
   // check updates
-  git(repoPath)
+  require("simple-git")(repoPath)
     .exec(() =>
       appLogger.info(
         `${c.cyan}[git] ${c.white}Starting pull from origin master`
