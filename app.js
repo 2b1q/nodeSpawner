@@ -44,7 +44,17 @@ const containerLogger = createLogger({
 });
 
 // initialise .git repository
-const git = require("simple-git/promise")(repoPath);
+const git = require("simple-git/promise");
+
+const checkIsRepo = () =>
+  new Promise((resolve, reject) => {
+    appLogger.info(`${c.cyan}[git] ${c.white}Check repository`);
+    try {
+      return resolve(fs.existsSync(repoPath));
+    } catch (e) {
+      reject(e);
+    }
+  });
 
 // build gw.exe Promise
 const buildP = () =>
@@ -98,23 +108,26 @@ const runUpdater = () => {
 };
 // bootstrap
 // check repo
-// fetch repo
+// clone repo
 // build gw.exe
 // spawn gw.exe
 // run check updates scheduller
-git
-  .checkIsRepo() // check repo
+checkIsRepo()
   .then(
     isRepo =>
-      !isRepo &&
-      git.clone(remote).then(() => {
-        appLogger.info(`${c.cyan}[git]${c.white} clone done`);
-        rebuild = true; // set flag to rebuild exe after clone repo
-      })
+      (!isRepo &&
+        appLogger.info(`${c.cyan}[git]${c.white} Repository not exists`) &&
+        git()
+          .clone(remote, repoPath)
+          .then(() => {
+            appLogger.info(`${c.cyan}[git]${c.white} clone done`);
+            rebuild = true; // set flag to rebuild exe after clone repo
+          })) ||
+      appLogger.info(`${c.cyan}[git]${c.white} Repository already exists`)
   )
-  .then(buildP) // build gw.exe
-  .then(spawnContainerP)
-  .then(() => runUpdater()) // run check updates scheduller
+  // .then(buildP) // build gw.exe
+  // .then(spawnContainerP)
+  // .then(() => runUpdater()) // run check updates scheduller
   .catch(e => appLogger.error(e));
 
 // if (platform === "win32") {
@@ -166,7 +179,7 @@ function checkUpdates() {
   // stop interval
   clearInterval(updInterval);
   // check updates
-  require("simple-git")()
+  git(repoPath)
     .exec(() =>
       appLogger.info(
         `${c.cyan}[git] ${c.white}Starting pull from origin master`

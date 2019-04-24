@@ -4,7 +4,7 @@ module.exports = {
   git: {
     remote: "https://github.com/2b1q/nodeSpawner.git",
     user: "",
-    repoPath: "./",
+    repoPath: ".repo/",
     CHECK_INTERVAL: 10000
   },
   version: {
