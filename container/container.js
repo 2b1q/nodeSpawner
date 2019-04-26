@@ -4,5 +4,5 @@ const {
 } = require("../config");
 setInterval(
   () => console.log(`container PID ${process.pid} version ${version}`),
-  1500
+  2000
 );
