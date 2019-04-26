@@ -8,7 +8,7 @@ module.exports = {
     CHECK_INTERVAL: 10000
   },
   version: {
-    container: "0.0.3b", // gw.exe
+    container: "0.0.3c", // gw.exe
     containerExe: "gw.exe",
     app: "0.0.2" // gw_service.exe (main proc)
   },
