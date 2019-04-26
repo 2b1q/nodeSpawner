@@ -61,6 +61,10 @@ const buildP = () =>
     // check OS type
     if (platform !== "win32") return reject("not win32 platform");
     if (rebuild) {
+      if(container){
+        container.kill()
+        delete container
+      }
       appLogger.info(`${c.magenta}[nexe]${c.white} rebuilding ${containerExe}`);
       const jscontainer = `./${repoPath}/container/container.js`;
       const { compile } = require("nexe"); // load nexe compile API
