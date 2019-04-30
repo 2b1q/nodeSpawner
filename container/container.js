@@ -3,6 +3,9 @@ const {
   version: { container: version }
 } = require("../config");
 setInterval(
-  () => console.log(`container PID ${process.pid} version ${version}`),
+  () =>
+    console.log(
+      `Hello World from container PID ${process.pid} version ${version}`
+    ),
   2000
 );
